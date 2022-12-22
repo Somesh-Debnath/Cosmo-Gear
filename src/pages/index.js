@@ -86,7 +86,7 @@ export async function getStaticProps(){
         slug
         heroBackground 
       }
-      products(first: 4) {
+      products(where: {categories_some: {slug: "featured"}}) {
         name
         price
         slug
