@@ -1,6 +1,7 @@
+/* eslint-disable @next/next/no-img-element */
 import Head from 'next/head'
 import Link from 'next/link';
-
+import { ApolloClient, InMemoryCache, ApolloProvider, gql } from '@apollo/client';
 import Layout from '@components/Layout';
 import Container from '@components/Container';
 import Button from '@components/Button';
@@ -9,7 +10,9 @@ import products from '@data/products';
 
 import styles from '@styles/Page.module.scss'
 
-export default function Home() {
+export default function Home({home,products}) {
+  console.log(products);
+  const {heroBackground,heroLink,heroText,heroTitle}=home;
   return (
     <Layout>
       <Head>
@@ -21,13 +24,14 @@ export default function Home() {
         <h1 className="sr-only">Space Jelly Gear</h1>
 
         <div className={styles.hero}>
-          <Link href="#">
+          <Link href={heroLink}>
             <a>
               <div className={styles.heroContent}>
-                <h2>Prepare for liftoff.</h2>
-                <p>Apparel that&apos;s out of this world!</p>
+                <h2>{heroTitle}</h2>
+                <p>{heroText}</p>
               </div>
-              <img className={styles.heroImage} src="/images/space-jelly-gear-banner.jpg" alt="" />
+              <img className={styles.heroImage} width={heroBackground.width} height={heroBackground.height}
+               src={heroBackground.url} alt="hero-img" />
             </a>
           </Link>
         </div>
@@ -35,13 +39,13 @@ export default function Home() {
         <h2 className={styles.heading}>Featured Gear</h2>
 
         <ul className={styles.products}>
-          {products.slice(0, 4).map(product => {
+          {products.map(product => {
             return (
-              <li key={product.id}>
-                <Link href="#">
+              <li key={product.slug}>
+                <Link href={`/products/${product.slug}`}>
                   <a>
                     <div className={styles.productImage}>
-                      <img width="500" height="500" src={product.image} alt="" />
+                      <img width={product.image.width} height={product.image.height} src={product.image.url} alt="" />
                     </div>
                     <h3 className={styles.productTitle}>
                       { product.name }
@@ -63,4 +67,43 @@ export default function Home() {
       </Container>
     </Layout>
   )
+}
+
+export async function getStaticProps(){
+  const client = new ApolloClient({
+    uri: 'https://api-ap-south-1.hygraph.com/v2/clcn3l7n03bu601rre7ypgu6g/master',
+    cache: new InMemoryCache(),
+  });
+  const data = await client.query({
+    query: gql`
+    query PageHome {
+      page(where: {slug: "home"}) {
+        id
+        heroLink
+        heroText
+        heroTitle
+        name
+        slug
+        heroBackground 
+      }
+      products(first: 4) {
+        name
+        price
+        slug
+        image 
+      }
+    }
+
+  `
+  });    
+  
+  const home=data.data.page;
+  const products=data.data.products;
+  console.log(products)
+  return{
+    props:{
+      home,
+      products
+    }
+  }
 }
