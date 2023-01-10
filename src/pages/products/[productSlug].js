@@ -1,10 +1,11 @@
-/* eslint-disable @next/next/no-img-element */
 import Head from 'next/head'
 import {
   ApolloClient,
   InMemoryCache,
   gql
 } from "@apollo/client";
+
+import { buildImage } from '@lib/cloudinary';
 
 import Layout from '@components/Layout';
 import Header from '@components/Header';
@@ -24,7 +25,7 @@ export default function Product({ product }) {
       <Container>
         <div className={styles.productWrapper}>
           <div className={styles.productImage}>
-            <img width={product.image.width} height={product.image.height} src={product.image.url} alt="" />
+            <img width={product.image.width} height={product.image.height} src={buildImage(product.image.public_id).toURL()} alt="" />
           </div>
           <div className={styles.productContent}>
             <h1>{ product.name }</h1>
@@ -53,15 +54,15 @@ export default function Product({ product }) {
   )
 }
 
-export async function getStaticProps({ params }) {
+export async function getStaticProps({ params, locale }) {
   const client = new ApolloClient({
-    uri: 'https://api-us-east-1.graphcms.com/v2/ckzvrda212z1d01za7m8y55rc/master',
+    uri: process.env.NEXT_PUBLIC_GRAPHQL_URI,
     cache: new InMemoryCache()
   });
 
   const data = await client.query({
     query: gql`
-      query PageProduct($slug: String) {
+      query PageProduct($slug: String, $locale: Locale!) {
         product(where: {slug: $slug}) {
           id
           image
@@ -71,15 +72,29 @@ export async function getStaticProps({ params }) {
             html
           }
           slug
+          localizations(locales: [$locale]) {
+            description {
+              html
+            }
+            locale
+          }
         }
       }
     `,
     variables: {
-      slug: params.productSlug
+      slug: params.productSlug,
+      locale
     }
   });
 
-  const product = data.data.product;
+  let product = data.data.product;
+
+  if ( product.localizations.length > 0 ) {
+    product = {
+      ...product,
+      ...product.localizations[0]
+    }
+  }
 
   return {
     props: {
@@ -88,9 +103,9 @@ export async function getStaticProps({ params }) {
   }
 }
 
-export async function getStaticPaths() {
+export async function getStaticPaths({ locales }) {
   const client = new ApolloClient({
-    uri: 'https://api-us-east-1.graphcms.com/v2/ckzvrda212z1d01za7m8y55rc/master',
+    uri: process.env.NEXT_PUBLIC_GRAPHQL_URI,
     cache: new InMemoryCache()
   });
 
@@ -117,7 +132,17 @@ export async function getStaticPaths() {
   })
 
   return {
-    paths,
+    paths: [
+      ...paths,
+      ...paths.flatMap(path => {
+        return locales.map(locale => {
+          return {
+            ...path,
+            locale
+          }
+        })
+      })
+    ],
     fallback: false
   }
 }

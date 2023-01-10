@@ -2,7 +2,7 @@ import {Cloudinary} from '@cloudinary/url-gen';
 
 const cld = new Cloudinary({
   cloud: {
-    cloudName: 'graphcmscourse'
+    cloudName: 'dt7vyse2i'
   },
   url: {
     secure: true

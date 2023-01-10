@@ -6,6 +6,8 @@ import {
   gql
 } from "@apollo/client";
 
+import { buildImage } from '@lib/cloudinary';
+
 import Layout from '@components/Layout';
 import Header from '@components/Header';
 import Container from '@components/Container';
@@ -28,12 +30,13 @@ export default function Category({ category, products }) {
 
         <ul className={styles.products}>
           {products.map(product => {
+            const imageUrl = buildImage(product.image.public_id).resize('w_900,h_900').toURL();
             return (
               <li key={product.id}>
                 <Link href={`/products/${product.slug}`}>
                   <a>
                     <div className={styles.productImage}>
-                      <img width={product.image.width} height={product.image.height} src={product.image.url} alt="" />
+                      <img width="900" height="900" src={imageUrl} alt="" />
                     </div>
                     <h3 className={styles.productTitle}>
                       { product.name }
@@ -66,7 +69,7 @@ export default function Category({ category, products }) {
 
 export async function getStaticProps({ params }) {
   const client = new ApolloClient({
-    uri: 'https://api-us-east-1.graphcms.com/v2/ckzvrda212z1d01za7m8y55rc/master',
+    uri: process.env.NEXT_PUBLIC_GRAPHQL_URI,
     cache: new InMemoryCache()
   });
 
@@ -102,9 +105,9 @@ export async function getStaticProps({ params }) {
   }
 }
 
-export async function getStaticPaths() {
+export async function getStaticPaths({ locales }) {
   const client = new ApolloClient({
-    uri: 'https://api-us-east-1.graphcms.com/v2/ckzvrda212z1d01za7m8y55rc/master',
+    uri: process.env.NEXT_PUBLIC_GRAPHQL_URI,
     cache: new InMemoryCache()
   });
 
@@ -116,6 +119,7 @@ export async function getStaticPaths() {
           slug
         }
       }
+
     `
   });
 
@@ -128,7 +132,17 @@ export async function getStaticPaths() {
   })
 
   return {
-    paths,
+    paths: [
+      ...paths,
+      ...paths.flatMap(path => {
+        return locales.map(locale => {
+          return {
+            ...path,
+            locale
+          }
+        })
+      })
+    ],
     fallback: false
   }
 }
