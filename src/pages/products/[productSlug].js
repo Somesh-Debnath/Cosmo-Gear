@@ -54,7 +54,7 @@ export default function Product({ product }) {
   )
 }
 
-export async function getStaticProps({ params, locale }) {
+export async function getStaticProps({params}) {
   const client = new ApolloClient({
     uri: process.env.NEXT_PUBLIC_GRAPHQL_URI,
     cache: new InMemoryCache()
@@ -62,7 +62,7 @@ export async function getStaticProps({ params, locale }) {
 
   const data = await client.query({
     query: gql`
-      query PageProduct($slug: String, $locale: Locale!) {
+      query PageProduct($slug: String, ) {
         product(where: {slug: $slug}) {
           id
           image
@@ -72,30 +72,15 @@ export async function getStaticProps({ params, locale }) {
             html
           }
           slug
-          localizations(locales: [$locale]) {
-            description {
-              html
-            }
-            locale
-          }
         }
       }
     `,
     variables: {
       slug: params.productSlug,
-      locale
     }
   });
 
   let product = data.data.product;
-
-  if ( product.localizations.length > 0 ) {
-    product = {
-      ...product,
-      ...product.localizations[0]
-    }
-  }
-
   return {
     props: {
       product
@@ -103,7 +88,7 @@ export async function getStaticProps({ params, locale }) {
   }
 }
 
-export async function getStaticPaths({ locales }) {
+export async function getStaticPaths() {
   const client = new ApolloClient({
     uri: process.env.NEXT_PUBLIC_GRAPHQL_URI,
     cache: new InMemoryCache()
@@ -132,17 +117,7 @@ export async function getStaticPaths({ locales }) {
   })
 
   return {
-    paths: [
-      ...paths,
-      ...paths.flatMap(path => {
-        return locales.map(locale => {
-          return {
-            ...path,
-            locale
-          }
-        })
-      })
-    ],
+    paths,
     fallback: false
   }
 }

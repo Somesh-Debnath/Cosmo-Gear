@@ -67,7 +67,7 @@ export default function Category({ category, products }) {
   )
 }
 
-export async function getStaticProps({ params }) {
+export async function getStaticProps({params}) {
   const client = new ApolloClient({
     uri: process.env.NEXT_PUBLIC_GRAPHQL_URI,
     cache: new InMemoryCache()
@@ -105,7 +105,7 @@ export async function getStaticProps({ params }) {
   }
 }
 
-export async function getStaticPaths({ locales }) {
+export async function getStaticPaths() {
   const client = new ApolloClient({
     uri: process.env.NEXT_PUBLIC_GRAPHQL_URI,
     cache: new InMemoryCache()
@@ -132,17 +132,7 @@ export async function getStaticPaths({ locales }) {
   })
 
   return {
-    paths: [
-      ...paths,
-      ...paths.flatMap(path => {
-        return locales.map(locale => {
-          return {
-            ...path,
-            locale
-          }
-        })
-      })
-    ],
+    paths,
     fallback: false
   }
 }

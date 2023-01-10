@@ -8,10 +8,12 @@
 
 }
 
+
 .productImage {
 
-  width: 50%;
+  width: 32.9%;
   margin-right: 2em;
+  margin-top: 2rem;
 
   @media (max-width: 1024px) {
     width: 100%;
@@ -36,7 +38,7 @@
 }
 
 .productDescription {
-  font-size: 1.8em;
+  font-size: 1.1em;
 }
 
 .productPrice {
