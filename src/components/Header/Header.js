@@ -5,6 +5,7 @@ import { FaShoppingCart, FaRegUserCircle} from 'react-icons/fa';
 import useAuth from "@lib/firebaseAuthHook";
 import { auth, provider } from "@lib/firebase"
 import Container from '@components/Container';
+import Image from 'next/image';
 
 import styles from './Header.module.scss';
 
@@ -35,13 +36,18 @@ const Header = () => {
         </p>
         <ul className={styles.headerLinks}>
           <li>
-            <Link href="/categories/apparel">
-              <a>Apparel</a>
+            <Link href="/">
+              <a>Home</a>
             </Link>
           </li>
           <li>
-            <Link href="/categories/accessories">
-              <a>Accessories</a>
+            <Link href="/products/">
+              <a>Products</a>
+            </Link>
+          </li>
+          <li>
+            <Link href="/">
+              <a>About</a>
             </Link>
           </li>
         </ul>
@@ -55,11 +61,8 @@ const Header = () => {
         </p>
         <div onClick={handleLogin} className={styles.headerLocales}>
           {
-            user ? (
-              
-                <img className={styles.headerLocales} src={user.photoURL
-                } alt={user.displayName} />
-
+            user ? ( 
+                 <img src={user.photoURL}/>
             ) : (
                 <FaRegUserCircle  />
               

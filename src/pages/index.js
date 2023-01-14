@@ -26,30 +26,6 @@ export default function Home({home,products}) {
         <h1 className="sr-only">Space Jelly Gear</h1>
 
       <div className={styles.hero}>
-        <Carousel 
-         infiniteLoop={true}
-          autoPlay={true}
-          showThumbs={false}
-          showStatus={false}
-          showArrows={false}
-          interval={2000}
-          transitionTime={900}
-
-        >
-          <Link href={heroLink}>
-            <a>
-              <div className={styles.heroContent}>
-                <h2>{heroTitle}</h2>
-                <p>{heroText}</p>
-              </div>
-              
-                <div>
-                <img className={styles.heroImage} width={heroBackground.width} height={heroBackground.height}
-               src={buildImage(heroBackground.public_id).toURL()} alt="hero-img" />
-                </div>
-              
-            </a>
-          </Link>
 
           <Link href={heroLink}>
             <a>
@@ -65,22 +41,7 @@ export default function Home({home,products}) {
               
             </a>
           </Link>
-
-          <Link href={heroLink}>
-            <a>
-              <div className={styles.heroContent}>
-                <h2>{heroTitle}</h2>
-                <p>{heroText}</p>
-              </div>
-              
-                <div>
-                <img className={styles.heroImage} width={heroBackground.width} height={heroBackground.height}
-               src={buildImage(heroBackground.public_id).toURL()} alt="hero-img" />
-                </div>
-              
-            </a>
-          </Link>
-        </Carousel>
+    
         </div>
 
         <h2 className={styles.heading}>Featured Gear</h2>

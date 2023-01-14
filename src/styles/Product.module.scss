@@ -26,6 +26,20 @@
   }
 
 }
+.input{
+  width: 100%;
+  height: 100%;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #f8f8f8;
+  padding: 12px 20px;
+  box-sizing: border-box;
+  transition: 0.5s;
+  outline: none;
+  margin: 5px 0 22px 0;
+  display: inline-block;
+  text-align: center;
+}
 
 .productContent {
 
